@@ -90,23 +90,25 @@ export default function AdminDashboardPage() {
   const yearsList = [2024, 2025, 2026, 2027];
 
   return (
-    <div className="min-h-screen flex bg-zinc-950 text-zinc-100">
+    <div className="min-h-screen flex flex-col md:flex-row bg-zinc-950 text-zinc-100">
       <Sidebar role="ADMIN" />
 
-      <main className="flex-1 p-8 overflow-y-auto">
+      <main className="flex-1 p-3.5 sm:p-6 lg:p-8 overflow-y-auto min-w-0 w-full">
         <div className="max-w-6xl mx-auto space-y-6">
           {/* Header */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-              <h1 className="text-2xl font-black text-white">TỔNG QUAN HỆ THỐNG (ADMIN DASHBOARD)</h1>
+              <h1 className="text-xl sm:text-2xl font-black text-white break-words">
+                TỔNG QUAN HỆ THỐNG (ADMIN DASHBOARD)
+              </h1>
               <p className="text-zinc-400 text-xs mt-1">
                 Số liệu thống kê thời gian thực theo từng ngày, từng tuần, từng tháng, từng quý và từng năm cụ thể.
               </p>
             </div>
 
             {/* Thanh Tab chọn chu kỳ */}
-            <div className="flex items-center gap-1.5 p-1 rounded-xl bg-zinc-900 border border-zinc-800 text-xs">
-              <span className="text-zinc-500 font-semibold px-2">Xem theo:</span>
+            <div className="flex items-center gap-1.5 p-1 rounded-xl bg-zinc-900 border border-zinc-800 text-xs overflow-x-auto max-w-full pb-1 sm:pb-1">
+              <span className="text-zinc-500 font-semibold px-2 shrink-0">Xem theo:</span>
               {[
                 { id: "day", label: "Ngày" },
                 { id: "week", label: "Tuần" },
@@ -117,7 +119,7 @@ export default function AdminDashboardPage() {
                 <button
                   key={item.id}
                   onClick={() => setPeriod(item.id as any)}
-                  className={`px-3 py-1.5 rounded-lg font-bold transition-all ${
+                  className={`px-3 py-1.5 rounded-lg font-bold transition-all shrink-0 ${
                     period === item.id
                       ? "bg-emerald-600 text-white shadow-sm shadow-emerald-950"
                       : "text-zinc-400 hover:text-white hover:bg-zinc-800"
@@ -130,8 +132,8 @@ export default function AdminDashboardPage() {
           </div>
 
           {/* Bộ lọc chi tiết cho từng chu kỳ (Chọn ngày, chọn tuần 1 2 3..., chọn tháng 1 2 3...) */}
-          <Card className="border-zinc-800 bg-zinc-900/60 p-4">
-            <div className="flex flex-wrap items-center justify-between gap-4 text-xs">
+          <Card className="border-zinc-800 bg-zinc-900/60 p-3.5 sm:p-4">
+            <div className="flex flex-wrap items-center justify-between gap-3 text-xs">
               <div className="flex items-center gap-2 text-zinc-300 font-semibold">
                 <Filter className="h-4 w-4 text-emerald-400" />
                 <span>
@@ -145,17 +147,17 @@ export default function AdminDashboardPage() {
 
               {/* 1. Lọc theo từng ngày */}
               {period === "day" && (
-                <div className="flex items-center gap-3">
+                <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
                   <Input
                     type="date"
                     value={selectedDate}
                     onChange={(e) => setSelectedDate(e.target.value)}
-                    className="w-40 h-8 text-xs bg-zinc-950 border-zinc-700"
+                    className="w-full sm:w-40 h-8 text-xs bg-zinc-950 border-zinc-700 flex-1 sm:flex-none"
                   />
                   <Button
                     size="sm"
                     variant="outline"
-                    className="h-8 text-xs"
+                    className="h-8 text-xs whitespace-nowrap shrink-0"
                     onClick={() => setSelectedDate(todayStr)}
                   >
                     Xem Hôm Nay
@@ -363,7 +365,7 @@ export default function AdminDashboardPage() {
           </div>
 
           {/* Revenue Visual Chart Theo Chu Kỳ Được Chọn */}
-          <Card className="border-zinc-800 bg-zinc-900/70 p-6 space-y-4">
+          <Card className="border-zinc-800 bg-zinc-900/70 p-4 sm:p-6 space-y-4">
             <CardHeader className="p-0 flex flex-row items-center justify-between">
               <div>
                 <CardTitle className="text-base text-zinc-100 flex items-center gap-2">
@@ -384,7 +386,7 @@ export default function AdminDashboardPage() {
             </CardHeader>
 
             <CardContent className="p-0">
-              <div className="h-56 flex items-end justify-between gap-2.5 pt-6 border-b border-zinc-800 pb-2">
+              <div className="h-56 flex items-end justify-between gap-2.5 pt-6 border-b border-zinc-800 pb-2 overflow-x-auto">
                 {chartData.map((d: any) => {
                   const heightPercent = Math.max(8, Math.round((d.revenue / maxRevenue) * 100));
 
@@ -421,17 +423,20 @@ export default function AdminDashboardPage() {
           />
 
           {/* Recent Bookings */}
-          <Card className="border-zinc-800 bg-zinc-900/60 p-6 space-y-4">
-            <CardHeader className="p-0">
+          <Card className="border-zinc-800 bg-zinc-900/60 p-4 sm:p-6 space-y-4">
+            <CardHeader className="p-0 flex flex-row items-center justify-between">
               <CardTitle className="text-base text-zinc-100 flex items-center gap-2">
                 <Clock className="h-4 w-4 text-emerald-400" />
                 Các Lượt Đặt Bàn Gần Nhất
               </CardTitle>
+              <span className="text-[11px] font-normal text-zinc-500 sm:hidden">
+                (Vuốt ngang để xem ➔)
+              </span>
             </CardHeader>
             <CardContent className="p-0">
-              <div className="border border-zinc-800 rounded-lg overflow-hidden text-xs">
-                <table className="w-full text-left">
-                  <thead className="bg-zinc-950 text-zinc-400 border-b border-zinc-800">
+              <div className="border border-zinc-800 rounded-lg overflow-x-auto text-xs">
+                <table className="w-full text-left min-w-[560px]">
+                  <thead className="bg-zinc-950 text-zinc-400 border-b border-zinc-800 whitespace-nowrap">
                     <tr>
                       <th className="p-3">Mã Đặt Bàn</th>
                       <th className="p-3">Khách Hàng</th>
@@ -440,38 +445,46 @@ export default function AdminDashboardPage() {
                       <th className="p-3">Trạng Thái</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-zinc-800 text-zinc-300">
-                    {recentBookings.map((b: any) => (
-                      <tr key={b.id} className="hover:bg-zinc-900/50">
-                        <td className="p-3 font-mono font-bold text-emerald-400">
-                          {b.bookingCode}
-                        </td>
-                        <td className="p-3 font-medium text-white">
-                          {b.customerName}
-                        </td>
-                        <td className="p-3 font-bold text-white">
-                          Bàn {b.tableNumber}
-                        </td>
-                        <td className="p-3 text-zinc-400">
-                          {b.tableType}
-                        </td>
-                        <td className="p-3">
-                          <Badge
-                            variant={
-                              b.status === "CONFIRMED"
-                                ? "success"
-                                : b.status === "IN_USE"
-                                ? "warning"
-                                : b.status === "COMPLETED"
-                                ? "default"
-                                : "outline"
-                            }
-                          >
-                            {b.status}
-                          </Badge>
+                  <tbody className="divide-y divide-zinc-800 text-zinc-300 whitespace-nowrap">
+                    {recentBookings.length === 0 ? (
+                      <tr>
+                        <td colSpan={5} className="p-4 text-center text-zinc-500">
+                          Chưa có lượt đặt bàn nào trong chu kỳ này
                         </td>
                       </tr>
-                    ))}
+                    ) : (
+                      recentBookings.map((b: any) => (
+                        <tr key={b.id} className="hover:bg-zinc-900/50">
+                          <td className="p-3 font-mono font-bold text-emerald-400">
+                            {b.bookingCode}
+                          </td>
+                          <td className="p-3 font-medium text-white">
+                            {b.customerName}
+                          </td>
+                          <td className="p-3 font-bold text-white">
+                            Bàn {b.tableNumber}
+                          </td>
+                          <td className="p-3 text-zinc-400">
+                            {b.tableType}
+                          </td>
+                          <td className="p-3">
+                            <Badge
+                              variant={
+                                b.status === "CONFIRMED"
+                                  ? "success"
+                                  : b.status === "IN_USE"
+                                  ? "danger"
+                                  : b.status === "COMPLETED"
+                                  ? "default"
+                                  : "outline"
+                              }
+                            >
+                              {b.status}
+                            </Badge>
+                          </td>
+                        </tr>
+                      ))
+                    )}
                   </tbody>
                 </table>
               </div>

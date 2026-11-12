@@ -44,7 +44,7 @@ export function TableUtilizationCard({ data, isLoading }: TableUtilizationCardPr
   return (
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
       {/* Cột 1: Tỷ lệ lấp đầy bàn theo 24 khung giờ */}
-      <Card className="lg:col-span-7 border-zinc-800 bg-zinc-900/60 p-6 space-y-4">
+      <Card className="lg:col-span-7 border-zinc-800 bg-zinc-900/60 p-4 sm:p-6 space-y-4">
         <CardHeader className="p-0 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div>
             <CardTitle className="text-base text-zinc-100 flex items-center gap-2">
@@ -142,7 +142,7 @@ export function TableUtilizationCard({ data, isLoading }: TableUtilizationCardPr
       </Card>
 
       {/* Cột 2: Loại bàn được ưa chuộng nhất */}
-      <Card className="lg:col-span-5 border-zinc-800 bg-zinc-900/60 p-6 space-y-4">
+      <Card className="lg:col-span-5 border-zinc-800 bg-zinc-900/60 p-4 sm:p-6 space-y-4">
         <CardHeader className="p-0">
           <CardTitle className="text-base text-zinc-100 flex items-center gap-2">
             <Trophy className="h-4 w-4 text-amber-400" />

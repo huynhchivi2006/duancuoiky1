@@ -35,7 +35,7 @@ export function RevenueStructureCard({ data, isLoading }: RevenueStructureCardPr
   const total = tableRev + fnbRev + accRev + otherRev;
 
   return (
-    <Card className="border-zinc-800 bg-zinc-900/60 p-6 space-y-5">
+    <Card className="border-zinc-800 bg-zinc-900/60 p-4 sm:p-6 space-y-5">
       <CardHeader className="p-0 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
         <div>
           <CardTitle className="text-base text-zinc-100 flex items-center gap-2">

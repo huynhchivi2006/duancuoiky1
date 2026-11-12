@@ -62,10 +62,10 @@ export default function CustomerDashboardPage() {
   };
 
   return (
-    <div className="min-h-screen flex bg-zinc-950 text-zinc-100">
+    <div className="min-h-screen flex flex-col md:flex-row bg-zinc-950 text-zinc-100">
       <Sidebar role="CUSTOMER" />
 
-      <main className="flex-1 p-8 overflow-y-auto">
+      <main className="flex-1 p-3.5 sm:p-6 lg:p-8 overflow-y-auto min-w-0 w-full">
         <div className="max-w-5xl mx-auto">
           {/* Header */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
