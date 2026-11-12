@@ -202,3 +202,5 @@ npm run build:web
 - [x] **Testing**: 11/11 tests chạy thực tế PASSED.
 - [x] **Tài liệu hoàn chỉnh**: SRS, Architecture, ERD, API Specs, Test Report, Deployment Guide, User Manual, Báo cáo đồ án, Slide 15 trang, Kịch bản demo 5-10 phút.
 
+#   d u a n c u o i k y 1  
+ 
