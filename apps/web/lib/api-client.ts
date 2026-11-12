@@ -31,7 +31,7 @@ function getCandidateUrls(endpoint: string, qs: string): string[] {
     const isHttps = window.location.protocol === "https:";
     const basePath = typeof window !== "undefined" && window.location.pathname.startsWith("/huynhchivi/doan")
       ? "/huynhchivi/doan"
-      : (process.env.NEXT_PUBLIC_BASE_PATH || "");
+      : "";
 
     const proxyUrl = `${basePath}/proxy.php?path=${encodeURIComponent(cleanEndpoint)}${
       qs ? `&${qs}` : ""

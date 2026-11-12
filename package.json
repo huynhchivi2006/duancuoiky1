@@ -9,7 +9,7 @@
     "apps/*"
   ],
   "scripts": {
-    "build": "cd apps/api && npx prisma generate && npx nest build",
+    "build": "npm run build --workspace=apps/web",
     "build:api": "cd apps/api && npx prisma generate && npx nest build",
     "build:web": "npm run build --workspace=apps/web",
     "start": "node apps/api/dist/main.js",

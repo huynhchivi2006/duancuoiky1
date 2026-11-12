@@ -807,7 +807,7 @@ function BookContent() {
                 <img
                   src={`https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(
                     typeof window !== "undefined"
-                      ? `${window.location.origin}${window.location.pathname.startsWith("/huynhchivi/doan") ? "/huynhchivi/doan" : (process.env.NEXT_PUBLIC_BASE_PATH || "")}/live-bill?code=${encodeURIComponent(successBooking.bookingCode)}`
+                      ? `${window.location.origin}${window.location.pathname.startsWith("/huynhchivi/doan") ? "/huynhchivi/doan" : ""}/live-bill?code=${encodeURIComponent(successBooking.bookingCode)}`
                       : `/live-bill?code=${encodeURIComponent(successBooking.bookingCode)}`
                   )}`}
                   alt="Mã QR Tra Cứu Bill"
