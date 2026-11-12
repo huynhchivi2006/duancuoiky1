@@ -61,6 +61,7 @@ export default function StaffBillingPage() {
   // QR Modal
   const [isQrModalOpen, setIsQrModalOpen] = useState(false);
   const [qrCodeData, setQrCodeData] = useState<{ url: string; title: string } | null>(null);
+  const [isBankTransferQrOpen, setIsBankTransferQrOpen] = useState(false);
 
   // 1. Lấy danh sách bàn đang chơi
   const { data: tables = [], isLoading: isLoadingTables } = useQuery({
@@ -235,16 +236,21 @@ export default function StaffBillingPage() {
         method: "POST",
         body: JSON.stringify({
           method,
-          note: "Thanh toán thành công tại quầy thu ngân",
+          note: method === "CASH" 
+            ? "Thanh toán thành công bằng tiền mặt tại quầy thu ngân"
+            : "Thanh toán thành công qua chuyển khoản VietQR",
         }),
       });
     },
-    onSuccess: (updatedInv: any) => {
+    onSuccess: (updatedInv: any, variables) => {
       queryClient.invalidateQueries({ queryKey: ["staff-billing-tables"] });
       const pts = updatedInv?.pointsEarned || 0;
-      alert(`✅ Thanh toán thành công! ${pts > 0 ? `Khách được cộng +${pts} điểm thưởng.` : ""}`);
+      const methodLabel = variables?.method === "CASH" ? "tiền mặt" : "chuyển khoản VietQR";
+      alert(`✅ Thanh toán bằng ${methodLabel} thành công! ${pts > 0 ? `Khách được cộng +${pts} điểm thưởng.` : ""}`);
       setSelectedInvoice(null);
+      setIsBankTransferQrOpen(false);
     },
+    onError: (err: any) => alert(err.message || "Lỗi khi xác nhận thanh toán"),
   });
 
   const occupiedTables = tables.filter(
@@ -717,34 +723,36 @@ export default function StaffBillingPage() {
                     </div>
 
                     {selectedInvoice.status !== "PAID" && (
-                      <div className="grid grid-cols-2 gap-3 pt-3">
-                        <Button
-                          className="gap-2 bg-emerald-600 hover:bg-emerald-500 font-semibold text-xs h-10"
-                          isLoading={payMutation.isPending}
-                          onClick={() =>
-                            payMutation.mutate({
-                              invoiceId: selectedInvoice.id,
-                              method: "CASH",
-                            })
-                          }
-                        >
-                          <Banknote className="h-4 w-4" />
-                          Tiền Mặt
-                        </Button>
+                      <div className="space-y-2.5 pt-3">
+                        <div className="text-xs font-semibold text-zinc-300">
+                          Chọn hình thức thanh toán của khách:
+                        </div>
 
-                        <Button
-                          className="gap-2 bg-sky-600 hover:bg-sky-500 font-semibold text-xs h-10"
-                          isLoading={payMutation.isPending}
-                          onClick={() =>
-                            payMutation.mutate({
-                              invoiceId: selectedInvoice.id,
-                              method: "BANK_TRANSFER",
-                            })
-                          }
-                        >
-                          <QrCode className="h-4 w-4" />
-                          Chuyển Khoản VietQR
-                        </Button>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          {/* 1. Tiền Mặt - Chốt trực tiếp, không cần hiện QR */}
+                          <Button
+                            className="gap-2 bg-emerald-600 hover:bg-emerald-500 font-bold text-xs h-11 shadow-md shadow-emerald-950/40"
+                            isLoading={payMutation.isPending && (payMutation.variables as any)?.method === "CASH"}
+                            onClick={() =>
+                              payMutation.mutate({
+                                invoiceId: selectedInvoice.id,
+                                method: "CASH",
+                              })
+                            }
+                          >
+                            <Banknote className="h-4 w-4" />
+                            Tiền Mặt (Không Cần QR)
+                          </Button>
+
+                          {/* 2. Chuyển Khoản - Mở modal QR VietQR cho khách quét */}
+                          <Button
+                            className="gap-2 bg-sky-600 hover:bg-sky-500 font-bold text-xs h-11 shadow-md shadow-sky-950/40"
+                            onClick={() => setIsBankTransferQrOpen(true)}
+                          >
+                            <QrCode className="h-4 w-4" />
+                            Chuyển Khoản (Hiện Mã QR)
+                          </Button>
+                        </div>
                       </div>
                     )}
                   </div>
@@ -902,6 +910,88 @@ export default function StaffBillingPage() {
           </div>
         )}
       </Modal>
+
+      {/* Modal QR Chuyển Khoản Ngân Hàng (VietQR) */}
+      {selectedInvoice && (
+        <Modal
+          isOpen={isBankTransferQrOpen}
+          onClose={() => setIsBankTransferQrOpen(false)}
+          title={`Mã QR Chuyển Khoản - Hóa Đơn ${selectedInvoice.invoiceCode}`}
+          description="Khách dùng ứng dụng ngân hàng hoặc ví điện tử (MB, Vietcombank, Techcombank, MoMo...) quét mã bên dưới để thanh toán"
+        >
+          <div className="space-y-4 text-center text-xs">
+            {/* Hộp mã QR VietQR */}
+            <div className="p-3 bg-white rounded-2xl inline-block shadow-2xl mx-auto border-2 border-sky-500/40">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={`https://img.vietqr.io/image/970422-0978580607-compact2.png?amount=${Number(
+                  selectedInvoice.finalAmount || 0
+                )}&addInfo=${encodeURIComponent(
+                  `ROYAL ${selectedInvoice.invoiceCode}`
+                )}&accountName=HUYNH%20CHI%20VI`}
+                alt="Mã QR Chuyển Khoản VietQR"
+                className="w-56 h-56 sm:w-64 sm:h-64 object-contain mx-auto"
+              />
+            </div>
+
+            {/* Thông tin tài khoản chi tiết */}
+            <div className="p-3.5 rounded-xl bg-zinc-950 border border-zinc-800 text-left space-y-1.5 text-xs">
+              <div className="flex justify-between items-center pb-1.5 border-b border-zinc-800/80">
+                <span className="text-zinc-400">Số tiền cần chuyển:</span>
+                <span className="text-base font-black text-emerald-400">
+                  {formatVND(selectedInvoice.finalAmount)}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-zinc-400">Ngân hàng:</span>
+                <span className="text-zinc-200 font-semibold">MB Bank (Quân Đội)</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-zinc-400">Số tài khoản:</span>
+                <span className="text-zinc-100 font-mono font-bold">0978580607</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-zinc-400">Chủ tài khoản:</span>
+                <span className="text-zinc-200 font-bold">HUYNH CHI VI</span>
+              </div>
+              <div className="flex justify-between pt-1 border-t border-zinc-800/80">
+                <span className="text-zinc-400">Nội dung chuyển khoản:</span>
+                <span className="text-emerald-400 font-mono font-bold">
+                  ROYAL {selectedInvoice.invoiceCode}
+                </span>
+              </div>
+            </div>
+
+            <div className="text-[11px] text-zinc-400 bg-zinc-900/60 p-2.5 rounded-lg border border-zinc-800/60">
+              💡 Mã QR đã điền sẵn số tiền <strong className="text-emerald-400">{formatVND(selectedInvoice.finalAmount)}</strong> và nội dung. Khi tiền đã về tài khoản, bấm nút xác nhận bên dưới.
+            </div>
+
+            {/* Nút thao tác trong Modal */}
+            <div className="flex flex-col sm:flex-row gap-2 pt-2 border-t border-zinc-800">
+              <Button
+                variant="outline"
+                className="flex-1 text-xs order-2 sm:order-1"
+                onClick={() => setIsBankTransferQrOpen(false)}
+              >
+                Quay Lại (Đổi Sang Tiền Mặt)
+              </Button>
+              <Button
+                className="flex-1 gap-1.5 bg-emerald-600 hover:bg-emerald-500 font-bold text-xs h-10 order-1 sm:order-2 shadow-lg shadow-emerald-950/50"
+                isLoading={payMutation.isPending && (payMutation.variables as any)?.method === "BANK_TRANSFER"}
+                onClick={() =>
+                  payMutation.mutate({
+                    invoiceId: selectedInvoice.id,
+                    method: "BANK_TRANSFER",
+                  })
+                }
+              >
+                <CheckCircle2 className="h-4 w-4" />
+                Đã Nhận Tiền - Hoàn Tất
+              </Button>
+            </div>
+          </div>
+        </Modal>
+      )}
     </div>
   );
 }
