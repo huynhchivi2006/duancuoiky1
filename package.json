@@ -9,18 +9,18 @@
     "apps/*"
   ],
   "scripts": {
-    "build": "npm run build --workspace=apps/web",
+    "build": "cd apps/web && npm run build",
     "build:api": "cd apps/api && npx prisma generate && npx nest build",
-    "build:web": "npm run build --workspace=apps/web",
+    "build:web": "cd apps/web && npm run build",
     "start": "node apps/api/dist/main.js",
     "start:api": "node apps/api/dist/main.js",
-    "start:web": "npm run start --workspace=apps/web",
-    "dev:api": "npm run start:dev --workspace=apps/api",
-    "dev:web": "npm run dev --workspace=apps/web",
-    "test:api": "npm run test --workspace=apps/api",
-    "prisma:generate": "npm run prisma:generate --workspace=apps/api",
-    "prisma:migrate": "npm run prisma:migrate --workspace=apps/api",
-    "prisma:seed": "npm run prisma:seed --workspace=apps/api"
+    "start:web": "cd apps/web && npm run start",
+    "dev:api": "npm run start:dev --workspace=api",
+    "dev:web": "cd apps/web && npm run dev",
+    "test:api": "npm run test --workspace=api",
+    "prisma:generate": "npm run prisma:generate --workspace=api",
+    "prisma:migrate": "npm run prisma:migrate --workspace=api",
+    "prisma:seed": "npm run prisma:seed --workspace=api"
   },
   "dependencies": {
     "@nestjs/cli": "^10.4.9",
